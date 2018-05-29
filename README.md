@@ -1,5 +1,9 @@
 # ConvexHull
 Algorithm HW2. Spring, 2018
 
-Requirment:
+Requirements
+--
   tkinter
+How to use?
+--
+  python3 convex_hull.py
