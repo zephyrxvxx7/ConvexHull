@@ -3,7 +3,7 @@ Algorithm HW2. Spring, 2018
 
 Requirements
 --
-  tkinter
+    tkinter
 How to use?
 --
-  python3 convex_hull.py
+    python3 convex_hull.py
