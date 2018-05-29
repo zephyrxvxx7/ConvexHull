@@ -2,8 +2,6 @@ import tkinter as tk
 from random import randint
 
 
-
-
 class MainApplication:
     canvas_width = 500
     canvas_height = 500
@@ -17,37 +15,39 @@ class MainApplication:
         tk.Label(master, text="點的數量").grid(row=0)
 
         self.inp = tk.Entry(master,
-                       textvariable = tk.StringVar(),
-                       validate = 'key',
-                       validatecommand=(master.register(self.digit_test), '%P')
-                       )
+                            textvariable=tk.StringVar(),
+                            validate='key',
+                            validatecommand=(
+                                master.register(self.digit_test), '%P')
+                            )
         self.inp.insert(10, "100")
         self.inp.grid(row=0, column=1)
 
-        tk.Button(master, text='產生', command=self.produce_points).grid(row=0, column=2)
+        tk.Button(master, text='產生', command=self.produce_points).grid(
+            row=0, column=2)
 
-        tk.Label(master, text="Press and Drag the mouse to draw").grid(row = 1, columnspan = 3)
+        tk.Label(master, text="在畫面上點擊以新增一些點").grid(row=1, columnspan=3)
 
         self.canvas = tk.Canvas(master,
-                        width = self.canvas_width,
-                        height = self.canvas_height)
+                                width=self.canvas_width,
+                                height=self.canvas_height)
         self.canvas.grid(row=2, columnspan=3)
         self.canvas.bind("<B1-Motion>", self.paint)
 
         tk.Button(master, text='開始Convex Hull',
                   command=self.paint_convex_hull).grid(row=3, columnspan=3)
 
-        
-
     def paint(self, event):
-        self.canvas.create_oval(event.x, event.y, event.x, event.y, fill = "black", tags = "points")
-        self.points.append([event.x, event.y])
-    
+        if (event.x, event.y) > (3, 3) and (event.x, event.y) < (497, 497):
+            self.paint_point(event.x, event.y)
+            self.points.append([event.x, event.y])
+
     def paint_line(self, *args, **xargs):
         self.canvas.create_line(*args, **xargs)
 
     def paint_point(self, x, y):
-        self.canvas.create_oval(x - 2, y - 2, x + 2, y + 2, fill="black", tags="points")
+        self.canvas.create_oval(x - 2, y - 2, x + 2,
+                                y + 2, fill="black", tags="points")
 
     def paint_points(self, point):
         for (x, y) in point:
@@ -55,10 +55,10 @@ class MainApplication:
 
     def clr(self):
         self.canvas.delete("all")
-    
+
     def del_lines(self):
         self.canvas.delete("lines")
-    
+
     def del_points(self):
         self.canvas.delete("points")
 
@@ -68,23 +68,24 @@ class MainApplication:
         if self.inp.get() != '':
             self.ROUND = int(self.inp.get())
 
-        self.points = [[randint(3, 497), randint(3, 497)] for _ in range(self.ROUND)]
+        self.points = [[randint(3, 497), randint(3, 497)]
+                       for _ in range(self.ROUND)]
 
         self.paint_points(self.points)
-    
+
     def digit_test(self, content):
         if content.isdigit() or (content == ""):
             return True
         else:
             return False
-    
+
     #--- convex hull ---
     def cross(self, A, B, C):
         return (B[0] - A[0]) * (C[1] - B[1]) - (B[1] - A[1]) * (C[0] - B[0])
-    
+
     def length2(self, A, B):
         return (A[0] - B[0]) * (A[0] - B[0]) + (A[1] - B[1]) * (A[1] - B[1])
-    
+
     def far(self, O, A, B):
         if self.length2(O, A) > self.length2(O, B):
             return True
@@ -95,19 +96,19 @@ class MainApplication:
         minPoint = self.points[0]
         start = 0
         CH = list()
-        
+
         for i in range(1, len(self.points)):
             if self.points[i][1] < minPoint[1] or (self.points[i][1] == minPoint[1] and self.points[i][0] < minPoint[0]):
                 minPoint = self.points[i]
                 start = i
-        
+
         CH.append(minPoint)
-        
 
         while True:
             nextStep = start
             for i in range(1, len(self.points)):
-                cross = self.cross(CH[-1], self.points[i], self.points[nextStep])
+                cross = self.cross(CH[-1], self.points[i],
+                                   self.points[nextStep])
                 if cross > 0 or (cross == 0 and self.far(CH[-1], self.points[i], self.points[nextStep])):
                     nextStep = i
             if nextStep == start:
@@ -116,14 +117,17 @@ class MainApplication:
         return CH
 
     def paint_convex_hull(self):
+        self.del_lines()
         try:
             lines = self.jarvismarch()
-            print(lines)
+            print("lines list:", lines)
             for i in range(len(lines)):
-                self.canvas.create_oval([lines[i][0], lines[i][1]], [lines[i][0], lines[i][1]], outline="red", fill="yellow")
+                self.canvas.create_oval([lines[i][0], lines[i][1]], [
+                                        lines[i][0], lines[i][1]], outline="red", fill="yellow")
 
-            self.canvas.create_line(lines[0:len(lines)], fill='blue')
             self.canvas.create_line(
-                lines[len(lines) - 1], lines[0], fill='blue')
+                lines[0:len(lines)], fill='blue', tags='lines')
+            self.canvas.create_line(
+                lines[len(lines) - 1], lines[0], fill='blue', tags='lines')
         except:
             self.clr()
