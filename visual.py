@@ -80,8 +80,8 @@ class MainApplication:
             return False
 
     #--- convex hull ---
-    def cross(self, A, B, C):
-        return (B[0] - A[0]) * (C[1] - A[1]) - (B[1] - A[1]) * (C[0] - A[0])
+    def cross(self, O, A, B):
+        return (A[0] - O[0]) * (B[1] - O[1]) - (A[1] - O[1]) * (B[0] - O[0])
 
     def length2(self, A, B):
         return (A[0] - B[0]) * (A[0] - B[0]) + (A[1] - B[1]) * (A[1] - B[1])
