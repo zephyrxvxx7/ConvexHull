@@ -94,40 +94,35 @@ class MainApplication:
 
     def jarvismarch(self):
         minPoint = self.points[0]
-        start = 0
         CH = list()
 
-        for i in range(1, len(self.points)):
-            if self.points[i][1] < minPoint[1] or (self.points[i][1] == minPoint[1] and self.points[i][0] < minPoint[0]):
-                minPoint = self.points[i]
-                start = i
+        for point in self.points[1:]:
+            if point[1] < minPoint[1] or (point[1] == minPoint[1] and point[0] < minPoint[0]):
+                 minPoint = point
         
         CH.append(minPoint)
+        nextStep = minPoint
 
         while True:
-            nextStep = start
-            for i in range(0, len(self.points)):
-                cross = self.cross(CH[-1], self.points[i],
-                                   self.points[nextStep])
-                if cross > 0 or (cross == 0 and self.far(CH[-1], self.points[i], self.points[nextStep])):
-                    nextStep = i
-            if nextStep == start:
+            for point in self.points:
+                cross = self.cross(CH[-1], point, nextStep)
+                if cross > 0 or (cross == 0 and self.far(CH[-1], point, nextStep)):
+                    nextStep = point
+            if nextStep == CH[0]:
                 break
-            CH.append(self.points[nextStep])
+            CH.append(nextStep)
         return CH
 
     def paint_convex_hull(self):
         self.del_lines()
         try:
-            lines = self.jarvismarch()
-            print("lines list:", lines)
-            for i in range(len(lines)):
-                self.canvas.create_oval([lines[i][0], lines[i][1]], [
-                                        lines[i][0], lines[i][1]], outline="red", fill="yellow")
+            convexs = self.jarvismarch()
+            print("convex list:", convexs)
+            for convex in convexs:
+                self.canvas.create_oval([convex[0], convex[1]], [
+                                        convex[0], convex[1]], outline="red", fill="yellow")
 
             self.canvas.create_line(
-                lines[0:len(lines)], fill='blue', tags='lines')
-            self.canvas.create_line(
-                lines[len(lines) - 1], lines[0], fill='blue', tags='lines')
+                convexs[:], convexs[0], fill='blue', tags='lines')
         except:
             self.clr()
