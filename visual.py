@@ -84,7 +84,7 @@ class MainApplication:
         return (A[0] - O[0]) * (B[1] - O[1]) - (A[1] - O[1]) * (B[0] - O[0])
 
     def length2(self, A, B):
-        return (A[0] - B[0]) * (A[0] - B[0]) + (A[1] - B[1]) * (A[1] - B[1])
+        return (A[0] - B[0]) ** 2 + (A[1] - B[1]) ** 2
 
     def far(self, O, A, B):
         if self.length2(O, A) > self.length2(O, B):
@@ -101,12 +101,12 @@ class MainApplication:
             if self.points[i][1] < minPoint[1] or (self.points[i][1] == minPoint[1] and self.points[i][0] < minPoint[0]):
                 minPoint = self.points[i]
                 start = i
-
+        
         CH.append(minPoint)
 
         while True:
             nextStep = start
-            for i in range(1, len(self.points)):
+            for i in range(0, len(self.points)):
                 cross = self.cross(CH[-1], self.points[i],
                                    self.points[nextStep])
                 if cross > 0 or (cross == 0 and self.far(CH[-1], self.points[i], self.points[nextStep])):
